@@ -35,4 +35,4 @@ const LookSchema = new Schema<LookDb>({
 });
 
 export const LookModel =
-  mongoose.models.Look || mongoose.model<LookDb>('Look', LookSchema);
+  mongoose.models?.Look || mongoose.model<LookDb>('Look', LookSchema);

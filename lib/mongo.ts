@@ -5,10 +5,12 @@ const MONGO_URI = process.env.MONGODB_URI;
 if (!MONGO_URI) throw new Error('Missing MONGODB_URI');
 const uri: string = MONGO_URI;
 
-let cached = (global as any).mongoose as {
+interface MongooseGlobal {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
-};
+}
+
+let cached = (global as any).mongoose as MongooseGlobal;
 
 if (!cached) {
   cached = (global as any).mongoose = {
@@ -17,7 +19,7 @@ if (!cached) {
   };
 }
 
-export async function connectMongo() {
+export async function connectMongo(): Promise<typeof mongoose> {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
@@ -27,6 +29,12 @@ export async function connectMongo() {
     });
   }
 
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+
   return cached.conn;
 }

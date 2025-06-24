@@ -1,25 +1,15 @@
-'use client';
-
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { getAllLooks } from '@/lib/actions/getLooks';
-import { LookDb } from '@/types/Look';
 import Link from 'next/link';
 
-export default function HomePage() {
-  const searchParams = useSearchParams();
-  const [looks, setLooks] = useState<LookDb[]>([]);
-  const segment = searchParams.get('segment');
+interface Props {
+  searchParams: {
+    segment?: 'luxury' | 'mid' | 'economy';
+  };
+}
 
-  useEffect(() => {
-    const fetchLooks = async () => {
-      const data = await getAllLooks(
-        segment as 'luxury' | 'mid' | 'economy' | undefined
-      );
-      setLooks(data);
-    };
-    fetchLooks();
-  }, [segment]);
+export default async function HomePage({ searchParams }: Props) {
+  const segment = searchParams?.segment;
+  const looks = await getAllLooks(segment);
 
   return (
     <main className="min-h-screen bg-white px-4 md:px-12 py-8">
@@ -71,7 +61,7 @@ export default function HomePage() {
       </section>
 
       {looks.length === 0 ? (
-        <p className="text-neutral-500 text-lg">
+        <p className="text-neutral-500 text-lg mt-12">
           No looks yet — try generating your first one!
         </p>
       ) : (
