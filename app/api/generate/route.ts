@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import LookModel from '@/lib/models/LookModel';
-import { connectMongo } from '@/lib/mongodb';
+import { LookModel } from '@/lib/models/LookModel';
+import { connectMongo } from '@/lib/mongo';
 
 export async function POST(req: Request) {
   await connectMongo();

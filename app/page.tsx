@@ -1,29 +1,28 @@
+'use client';
+
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { getAllLooks } from '@/lib/actions/getLooks';
+import { LookDb } from '@/types/Look';
 import Link from 'next/link';
-import { getAllLooks, getLooksBySegment } from '@/lib/actions/getLooks';
-import { LookClient } from '@/types/Look';
 
-interface Props {
-  searchParams: {
-    segment?: string;
-  };
-}
+export default function HomePage() {
+  const searchParams = useSearchParams();
+  const [looks, setLooks] = useState<LookDb[]>([]);
+  const segment = searchParams.get('segment');
 
-export default async function HomePage({ searchParams }: Props) {
-  const selected = searchParams.segment as
-    | 'luxury'
-    | 'mid'
-    | 'economy'
-    | undefined;
-
-  const looks: LookClient[] = selected
-    ? await getLooksBySegment(selected)
-    : await getAllLooks();
-
-  const segments = ['luxury', 'mid', 'economy'] as const;
+  useEffect(() => {
+    const fetchLooks = async () => {
+      const data = await getAllLooks(
+        segment as 'luxury' | 'mid' | 'economy' | undefined
+      );
+      setLooks(data);
+    };
+    fetchLooks();
+  }, [segment]);
 
   return (
     <main className="min-h-screen bg-white px-4 md:px-12 py-8">
-      {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-12">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">
           Discover AI-Powered Fashion Looks
@@ -44,54 +43,58 @@ export default async function HomePage({ searchParams }: Props) {
         </div>
       </header>
 
-      {/* Filter */}
-      <section className="mb-12 flex flex-wrap gap-3">
-        <span className="text-sm font-medium text-neutral-700 pt-1">
-          Filter by:
-        </span>
-        {segments.map((segment) => (
-          <Link
-            key={segment}
-            href={segment === selected ? '/' : `/?segment=${segment}`}
-            className={`px-4 py-1.5 rounded-full text-sm border ${
-              selected === segment
-                ? 'bg-black text-white border-black'
-                : 'border-neutral-300 text-neutral-700 hover:bg-neutral-100'
-            } transition-all`}
-          >
-            {segment.charAt(0).toUpperCase() + segment.slice(1)}
-          </Link>
-        ))}
+      <section className="mt-16">
+        <h2 className="text-2xl font-semibold mb-8">How It Works</h2>
+        <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-xl border border-neutral-200 shadow-sm text-center">
+            <div className="text-4xl mb-4">📸</div>
+            <h3 className="text-lg font-medium mb-2">Upload your photo</h3>
+            <p className="text-sm text-neutral-600">
+              And add your body measurements
+            </p>
+          </div>
+          <div className="p-6 rounded-xl border border-neutral-200 shadow-sm text-center">
+            <div className="text-4xl mb-4">🎯</div>
+            <h3 className="text-lg font-medium mb-2">Define your style</h3>
+            <p className="text-sm text-neutral-600">
+              Describe it or upload a reference look
+            </p>
+          </div>
+          <div className="p-6 rounded-xl border border-neutral-200 shadow-sm text-center">
+            <div className="text-4xl mb-4">🛍️</div>
+            <h3 className="text-lg font-medium mb-2">Get styled</h3>
+            <p className="text-sm text-neutral-600">
+              Browse and shop AI-generated outfits
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* Looks */}
-      <section>
-        {looks.length === 0 ? (
-          <p className="text-neutral-500 text-lg">
-            No looks found for this segment.
-          </p>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {looks.map((look) => (
-              <Link href={`/look/${look._id}`} key={look._id} className="group">
-                <div className="rounded-2xl overflow-hidden shadow-sm border border-neutral-200 hover:shadow-md transition">
-                  <img
-                    src={look.imageUrl}
-                    alt={look.title}
-                    className="w-full h-80 object-cover group-hover:scale-[1.03] transition-transform duration-300"
-                  />
-                  <div className="p-4">
-                    <h2 className="text-base font-semibold text-neutral-800">
-                      {look.title}
-                    </h2>
-                    <p className="text-xs text-neutral-500">{look.brand}</p>
-                  </div>
+      {looks.length === 0 ? (
+        <p className="text-neutral-500 text-lg">
+          No looks yet — try generating your first one!
+        </p>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-12">
+          {looks.map((look) => (
+            <Link href={`/look/${look._id}`} key={look._id} className="group">
+              <div className="rounded-2xl overflow-hidden shadow-sm border border-neutral-200 hover:shadow-md transition">
+                <img
+                  src={look.imageUrl}
+                  alt={look.title}
+                  className="w-full h-80 object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                />
+                <div className="p-4">
+                  <h2 className="text-base font-semibold text-neutral-800">
+                    {look.title}
+                  </h2>
+                  <p className="text-xs text-neutral-500">{look.brand}</p>
                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

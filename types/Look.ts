@@ -1,10 +1,10 @@
 import type mongoose from "mongoose";
 
-export interface LookDb {
-  _id: mongoose.Types.ObjectId;
+export type LookDb = {
+  _id: string;
   title: string;
   brand: string;
-  segment: "luxury" | "mid" | "economy";
+  segment: 'luxury' | 'mid' | 'economy';
   imageUrl: string;
   items?: {
     name: string;
@@ -12,7 +12,7 @@ export interface LookDb {
     type: string;
     url: string;
   }[];
-}
+};
 
 export interface LookClient {
   _id: string;

@@ -20,9 +20,11 @@
     "@tailwindcss/postcss": "^4.1.10",
     "@types/react": "19.1.8",
     "autoprefixer": "^10.4.21",
+    "dotenv-cli": "^8.0.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.10",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.3.3"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   }
 }

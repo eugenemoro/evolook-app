@@ -1,24 +1,38 @@
-import mongoose, { Schema, models, model } from "mongoose";
+// lib/models/LookModel.ts
+import mongoose, { Schema, Document } from 'mongoose';
 
-const LookSchema = new Schema(
+interface Item {
+  name: string;
+  brand: string;
+  type: string;
+  url: string;
+}
+
+export interface LookDb extends Document {
+  title: string;
+  brand: string;
+  segment: 'economy' | 'mid' | 'luxury';
+  imageUrl: string;
+  items: Item[];
+}
+
+const ItemSchema = new Schema<Item>(
   {
-    title: { type: String, required: true },
+    name: { type: String, required: true },
     brand: { type: String, required: true },
-    imageUrl: { type: String, required: true },
-    segment: { type: String, enum: ["economy", "middle", "luxury"], default: "middle" },
-    items: [
-      {
-        name: String,
-        url: String,
-        price: Number,
-        brand: String,
-        type: String,
-      },
-    ],
+    type: { type: String, required: true },
+    url: { type: String, required: true },
   },
-  { timestamps: true }
+  { _id: false }
 );
 
-const LookModel = models.Look || model("Look", LookSchema);
+const LookSchema = new Schema<LookDb>({
+  title: { type: String, required: true },
+  brand: { type: String, required: true },
+  segment: { type: String, enum: ['economy', 'mid', 'luxury'], required: true },
+  imageUrl: { type: String, required: true },
+  items: { type: [ItemSchema], required: true },
+});
 
-export default LookModel;
+export const LookModel =
+  mongoose.models.Look || mongoose.model<LookDb>('Look', LookSchema);

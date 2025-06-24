@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
-import LookModel from "../models/LookModel";
+import { LookModel } from "../models/LookModel";
 import type { LookDb } from "@/types/Look";
+import { connectMongo } from "../mongo";
 
 // Подключение к MongoDB
 export async function connectToDatabase() {
@@ -10,24 +11,20 @@ export async function connectToDatabase() {
 }
 
 // Получить все образы (главная)
-export async function getAllLooks() {
-  await connectToDatabase();
-
+export async function getAllLooks(segment?: 'luxury' | 'mid' | 'economy') {
   try {
-    const looks = await LookModel.find({})
+    await connectMongo();
+
+    const filter = segment ? { segment } : {};
+    const looks = await LookModel.find(filter)
       .sort({ createdAt: -1 })
       .lean<LookDb[]>();
-
     return looks.map((look) => ({
+      ...look,
       _id: look._id.toString(),
-      title: look.title,
-      brand: look.brand,
-      segment: look.segment,
-      imageUrl: look.imageUrl,
-      items: look.items || [],
     }));
   } catch (error) {
-    console.error("Error fetching looks:", error);
+    console.error('Error fetching looks:', error);
     return [];
   }
 }
