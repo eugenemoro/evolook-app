@@ -5,11 +5,21 @@ import { useCallback } from 'react';
 
 const segments = ['luxury', 'mid', 'economy'] as const;
 
-export default function SegmentFilter() {
+interface Props {
+  currentSegment?: 'luxury' | 'mid' | 'economy';
+  pathname?: string;
+  withReset?: boolean;
+}
+
+export default function SegmentFilter({
+  currentSegment,
+  pathname,
+  withReset,
+}: Props) {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const selected = searchParams.get('segment');
+  const urlPath = pathname || usePathname();
+  const selected = currentSegment || searchParams.get('segment');
 
   const onSelect = useCallback(
     (value: string | null) => {
@@ -21,9 +31,9 @@ export default function SegmentFilter() {
         params.delete('segment');
       }
 
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(`${urlPath}?${params.toString()}`);
     },
-    [searchParams, pathname, router]
+    [searchParams, urlPath, router]
   );
 
   return (
@@ -42,8 +52,7 @@ export default function SegmentFilter() {
         </button>
       ))}
 
-      {/* Reset button */}
-      {selected && (
+      {withReset && selected && (
         <button
           onClick={() => onSelect(null)}
           className="ml-2 text-sm text-neutral-500 underline hover:text-neutral-800 transition"

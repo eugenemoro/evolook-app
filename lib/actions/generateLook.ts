@@ -1,11 +1,11 @@
 'use server';
+
 import { connectMongo } from '@/lib/mongo';
 import { LookModel } from '@/lib/models/LookModel';
 import { LookDb } from '@/types/Look';
 import { v4 as uuidv4 } from 'uuid';
 import { getCurrentUser } from '@/lib/auth';
 
-// Мок-данные для генерации образа
 const generateMockLook = (): Omit<LookDb, '_id' | 'user'> => {
   const segments = ['luxury', 'mid', 'economy'] as const;
   const segment = segments[Math.floor(Math.random() * segments.length)];
@@ -42,12 +42,12 @@ export async function generateLook(): Promise<LookDb> {
   await connectMongo();
 
   const user = await getCurrentUser();
-  const lookData = generateMockLook();
+  if (!user || !user.email) throw new Error('User not authenticated');
 
   const look = await LookModel.create({
-    ...lookData,
+    ...generateMockLook(),
     user: {
-      email: user?.email || null,
+      email: user.email,
     },
   });
 

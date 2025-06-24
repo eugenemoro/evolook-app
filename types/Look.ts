@@ -12,6 +12,7 @@ export type LookDb = {
     type: string;
     url: string;
   }[];
+  user?: { email?: string }
 };
 
 export interface LookClient {

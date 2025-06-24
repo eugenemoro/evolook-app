@@ -4,7 +4,7 @@ import HowItWorks from '@/components/ui/HowItWorks';
 import SegmentFilter from '@/components/ui/SegmentFilter';
 import Skeleton from '@/components/ui/Skeleton';
 import { Suspense } from 'react';
-import LooksGrid from '@/components/LooksGrid';
+import LooksGrid from '@/components/LookGrid';
 
 interface Props {
   searchParams: {

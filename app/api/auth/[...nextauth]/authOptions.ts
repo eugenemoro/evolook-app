@@ -28,7 +28,7 @@ export const authOptions: AuthOptions = {
   },
   callbacks: {
     async session({ session, token }) {
-      if (token?.email) {
+      if (session?.user && token?.email) {
         session.user.email = token.email;
       }
       return session;

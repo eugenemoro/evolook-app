@@ -6,9 +6,10 @@ import LookCard from './ui/LookCard';
 
 interface Props {
   promise: Promise<LookDb[]>;
+  withDelete?: boolean;
 }
 
-export default function LooksGrid({ promise }: Props) {
+export default function LooksGrid({ promise, withDelete }: Props) {
   const [looks, setLooks] = useState<LookDb[] | null>(null);
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function LooksGrid({ promise }: Props) {
   }, [promise]);
 
   if (!looks) {
-    return <p className="text-neutral-400 text-sm">Loading...</p>; // fallback может быть заменён на Skeleton
+    return <p className="text-neutral-400 text-sm">Loading...</p>;
   }
 
   if (looks.length === 0) {
@@ -36,6 +37,7 @@ export default function LooksGrid({ promise }: Props) {
           title={look.title}
           imageUrl={look.imageUrl}
           brand={look.brand}
+          withDelete={withDelete}
         />
       ))}
     </div>
