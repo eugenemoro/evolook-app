@@ -6,20 +6,15 @@ import { useCallback } from 'react';
 const segments = ['luxury', 'mid', 'economy'] as const;
 
 interface Props {
-  currentSegment?: 'luxury' | 'mid' | 'economy';
   pathname?: string;
   withReset?: boolean;
 }
 
-export default function SegmentFilter({
-  currentSegment,
-  pathname,
-  withReset,
-}: Props) {
+export default function SegmentFilter({ pathname, withReset }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlPath = pathname || usePathname();
-  const selected = currentSegment || searchParams.get('segment');
+  const selected = searchParams.get('segment');
 
   const onSelect = useCallback(
     (value: string | null) => {
@@ -31,7 +26,10 @@ export default function SegmentFilter({
         params.delete('segment');
       }
 
-      router.push(`${urlPath}?${params.toString()}`);
+      const query = params.toString();
+      const fullPath = query ? `${urlPath}?${query}` : urlPath;
+
+      router.push(fullPath);
     },
     [searchParams, urlPath, router]
   );

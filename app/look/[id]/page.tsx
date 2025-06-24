@@ -14,7 +14,6 @@ export default async function LookPage({ params }: Props) {
 
   return (
     <main className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8 py-6 animate-fadeIn">
-      {/* Заголовок + кнопка */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{look.title}</h1>
@@ -28,7 +27,6 @@ export default async function LookPage({ params }: Props) {
         </Link>
       </div>
 
-      {/* Картинка */}
       <div className="rounded-xl overflow-hidden border border-neutral-200 shadow-sm mb-6">
         <Image
           src={look.imageUrl}
@@ -39,7 +37,6 @@ export default async function LookPage({ params }: Props) {
         />
       </div>
 
-      {/* Элементы костюма */}
       <section>
         <h2 className="text-lg font-semibold mb-4">Outfit Details</h2>
         <ul className="space-y-4">

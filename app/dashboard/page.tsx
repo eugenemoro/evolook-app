@@ -1,11 +1,9 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import SegmentFilter from '@/components/ui/SegmentFilter';
 import LooksGrid from '@/components/LookGrid';
 import { authOptions } from '../api/auth/[...nextauth]/authOptions';
 import { getLooksByUser } from '@/lib/actions/getLooksByUser';
-import SignOutButton from '@/components/SignOutButton';
 
 interface Props {
   searchParams?: {
@@ -29,18 +27,9 @@ export default async function DashboardPage({ searchParams }: Props) {
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">
           My Looks
         </h1>
-        <div className="flex gap-2">
-          <Link
-            href="/generate"
-            className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-black text-white text-sm font-medium shadow hover:shadow-md hover:bg-neutral-800 active:scale-95 transition-all duration-200"
-          >
-            + Generate New
-          </Link>
-          <SignOutButton />
-        </div>
       </header>
 
-      <SegmentFilter currentSegment={segment} pathname="/dashboard" withReset />
+      <SegmentFilter pathname="/dashboard" withReset />
 
       {looks.length === 0 ? (
         <p className="text-neutral-500 text-lg mt-12">

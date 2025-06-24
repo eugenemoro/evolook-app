@@ -1,6 +1,6 @@
 export default function HowItWorks() {
   return (
-    <section className="mt-16">
+    <section className="mt-8">
       <h2 className="text-2xl font-semibold mb-8">How It Works</h2>
       <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-6">
         <div className="p-6 rounded-xl border border-neutral-200 shadow-sm text-center">
