@@ -3,7 +3,11 @@ import mongoose from 'mongoose';
 import { connectMongo } from '@/lib/mongo';
 import { LookModel } from '@/lib/models/LookModel';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+interface Props {
+  params: { id: string };
+}
+
+export async function GET(req: NextRequest, { params }: Props) {
   await connectMongo();
 
   const { id } = params;

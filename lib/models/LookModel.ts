@@ -14,6 +14,7 @@ export interface LookDb extends Document {
   segment: 'economy' | 'mid' | 'luxury';
   imageUrl: string;
   items: Item[];
+  user: string;
 }
 
 const ItemSchema = new Schema<Item>(
@@ -26,13 +27,21 @@ const ItemSchema = new Schema<Item>(
   { _id: false }
 );
 
-const LookSchema = new Schema<LookDb>({
-  title: { type: String, required: true },
-  brand: { type: String, required: true },
-  segment: { type: String, enum: ['economy', 'mid', 'luxury'], required: true },
-  imageUrl: { type: String, required: true },
-  items: { type: [ItemSchema], required: true },
-});
+const LookSchema = new mongoose.Schema<LookDb>(
+  {
+    title: { type: String, required: true },
+    brand: { type: String, required: true },
+    segment: { type: String, enum: ['luxury', 'mid', 'economy'], required: true },
+    imageUrl: { type: String, required: true },
+    items: [ItemSchema],
+    user: {
+      email: { type: String, required: false },
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 export const LookModel =
   mongoose.models?.Look || mongoose.model<LookDb>('Look', LookSchema);

@@ -1,104 +1,114 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { generateLook } from '@/lib/actions/generateLook';
 
 export default function GeneratePage() {
-  const [mode, setMode] = useState<'prompt' | 'image'>('prompt');
-  const [prompt, setPrompt] = useState('');
-  const [image, setImage] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [title, setTitle] = useState('');
+  const [brand, setBrand] = useState('');
+  const [segment, setSegment] = useState<'luxury' | 'mid' | 'economy'>('mid');
+  const [imageUrl, setImageUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    setResult(null);
-
-    const formData = new FormData();
-    if (mode === 'prompt') {
-      formData.append('prompt', prompt);
-    } else if (image) {
-      formData.append('image', image);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      const look = await generateLook();
+      router.push(`/look/${look._id}`);
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      body: formData,
-    });
-
-    const data = await res.json();
-    setResult(data.imageUrl);
-    setLoading(false);
   };
 
   return (
-    <main className="max-w-2xl mx-auto p-6">
-      <h1 className="text-3xl font-semibold mb-6">Generate a Look</h1>
-
-      {/* Mode toggle */}
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => setMode('prompt')}
-          className={`px-4 py-2 rounded-full text-sm font-medium border ${
-            mode === 'prompt'
-              ? 'bg-black text-white'
-              : 'bg-white text-neutral-700'
-          } transition`}
-        >
-          Text Prompt
-        </button>
-        <button
-          onClick={() => setMode('image')}
-          className={`px-4 py-2 rounded-full text-sm font-medium border ${
-            mode === 'image'
-              ? 'bg-black text-white'
-              : 'bg-white text-neutral-700'
-          } transition`}
-        >
-          Reference Image
-        </button>
-      </div>
-
-      {/* Input */}
-      {mode === 'prompt' ? (
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          rows={4}
-          className="w-full border border-neutral-300 rounded-xl p-4 text-sm"
-          placeholder="Describe your ideal look..."
-        />
-      ) : (
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files?.[0] || null)}
-          className="text-sm"
-        />
-      )}
-
-      {/* Submit */}
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="mt-6 px-6 py-2 rounded-full bg-black text-white font-medium hover:bg-neutral-800 transition disabled:opacity-50"
+    <main className="min-h-screen bg-white px-4 py-8 flex items-start justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md space-y-6 p-6 rounded-xl border border-neutral-200 shadow-sm"
       >
-        {loading ? 'Generating...' : 'Generate'}
-      </button>
+        <h1 className="text-2xl font-semibold text-neutral-900">
+          Create New Look
+        </h1>
 
-      {/* Result */}
-      {result && (
-        <div className="mt-10">
-          <h2 className="text-xl font-semibold mb-4">Result</h2>
-          <Image
-            src={result}
-            alt="Generated Look"
-            width={512}
-            height={512}
-            className="rounded-xl shadow"
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">
+            Title
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full border border-neutral-300 rounded-lg px-4 py-2"
+            required
           />
         </div>
-      )}
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">
+            Brand
+          </label>
+          <input
+            type="text"
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            className="w-full border border-neutral-300 rounded-lg px-4 py-2"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">
+            Segment
+          </label>
+          <select
+            value={segment}
+            onChange={(e) => setSegment(e.target.value as any)}
+            className="w-full border border-neutral-300 rounded-lg px-4 py-2"
+          >
+            <option value="luxury">Luxury</option>
+            <option value="mid">Mid</option>
+            <option value="economy">Economy</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">
+            Image URL
+          </label>
+          <input
+            type="url"
+            placeholder="https://..."
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            className="w-full border border-neutral-300 rounded-lg px-4 py-2"
+            required
+          />
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt="Preview"
+              className="w-full h-48 object-cover mt-4 rounded-lg border"
+            />
+          )}
+        </div>
+
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-black text-white py-2 rounded-full hover:bg-neutral-800 transition-all"
+        >
+          {isLoading ? 'Generating...' : 'Generate Look'}
+        </button>
+      </form>
     </main>
   );
 }

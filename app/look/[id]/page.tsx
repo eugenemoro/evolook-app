@@ -8,7 +8,8 @@ type Props = {
 };
 
 export default async function LookPage({ params }: Props) {
-  const look = await getLookById(params.id);
+  const { id } = await params;
+  const look = await getLookById(id);
   if (!look) return notFound();
 
   return (
